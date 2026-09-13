@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NURA Bridge — Breaking Language Barriers</title>
+<style>
+  :root{
+    --paper: #F6F1E7;
+    --ink: #2B2620;
+    --rust: #0D909E;
+    --moss: #0A6F7A;
+    --line: #D8CFBB;
+    --card: #FFFDF8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    min-height:100vh;
+    padding:48px 20px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  header{margin-bottom:36px;}
+  .mark{
+    font-family: Georgia, serif;
+    font-style:italic;
+    font-size:15px;
+    color:var(--moss);
+    letter-spacing:0.02em;
+    margin-bottom:6px;
+  }
+  h1{
+    font-size:34px;
+    line-height:1.15;
+    margin:0 0 12px 0;
+    font-weight:400;
+  }
+  h1 em{ color:inherit; font-style:normal; }
+  p.sub{
+    font-size:16px;
+    line-height:1.55;
+    color:#5a5348;
+    max-width:56ch;
+    margin:0;
+  }
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:28px;
+    margin-top:32px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    color:#7a725f;
+    margin-bottom:8px;
+    font-family: -apple-system, sans-serif;
+  }
+  .input-row{display:flex; gap:10px;}
+  input[type=text]{
+    flex:1;
+    font-family: Georgia, serif;
+    font-size:19px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:#fff;
+    color:var(--ink);
+  }
+  input[type=text]:focus{outline:none; border-color:var(--rust);}
+  button{
+    font-family: -apple-system, sans-serif;
+    font-size:15px;
+    font-weight:600;
+    background:var(--rust);
+    color:#fff;
+    border:none;
+    border-radius:2px;
+    padding:0 22px;
+    cursor:pointer;
+    transition: background 0.15s ease;
+  }
+  button:hover{background:var(--moss);}
+  button:disabled{background:#c9b8ab; cursor:default;}
+  .examples{
+    margin-top:14px;
+    font-size:13px;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+  }
+  .examples button.chip{
+    background:none;
+    color:var(--moss);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:4px 12px;
+    font-size:13px;
+    font-weight:400;
+    margin:0 6px 6px 0;
+  }
+  .examples button.chip:hover{background:#eee6d4;}
+  .result{
+    margin-top:26px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    display:none;
+  }
+  .result.show{display:block;}
+  .term-en{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+    margin-bottom:4px;
+  }
+  .term-mn{
+    font-size:28px;
+    color:var(--rust);
+    margin:0 0 18px 0;
+  }
+  .block{margin-bottom:16px;}
+  .block-label{
+    font-size:12px;
+    color:var(--moss);
+    font-family: -apple-system, sans-serif;
+    margin-bottom:4px;
+  }
+  .block-text{font-size:17px; line-height:1.6;}
+  .block-text[contenteditable]{
+    outline:none;
+    border-bottom:1px dashed transparent;
+    cursor:text;
+  }
+  .block-text[contenteditable]:hover{border-bottom-color:var(--line);}
+  .block-text[contenteditable]:focus{border-bottom-color:var(--rust);}
+  .block-text[contenteditable]:empty:before{
+    content: attr(data-placeholder);
+    color:#a49b87;
+    font-style:italic;
+  }
+  .loading{
+    display:none;
+    margin-top:20px;
+    font-size:14px;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+    font-style:italic;
+  }
+  .loading.show{display:block;}
+  .cat{
+    margin-bottom:18px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .cat:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
+  .cat-title{
+    font-family: -apple-system, sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--moss);
+    margin-bottom:8px;
+  }
+  .cat-terms{display:flex; flex-wrap:wrap; gap:6px;}
+  .key-notice{
+    margin-top:14px;
+    font-size:13px;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+    background:#f0ece0;
+    padding:10px 14px;
+    border-radius:2px;
+  }
+  .key-notice.hidden{display:none;}
+  .link-btn{
+    background:none;
+    border:none;
+    color:var(--rust);
+    font-weight:600;
+    font-size:13px;
+    padding:0;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .key-form{
+    display:none;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .key-form.show{display:block;}
+  .key-form label{
+    font-size:12px;
+    color:#7a725f;
+    font-family:-apple-system,sans-serif;
+    margin-bottom:6px;
+  }
+  .missing-note{
+    font-size:14px;
+    color:#8a8271;
+    font-style:italic;
+  }
+  .error{
+    display:none;
+    margin-top:16px;
+    font-size:14px;
+    color:var(--rust);
+    font-family: -apple-system, sans-serif;
+  }
+  .error.show{display:block;}
+  footer{
+    margin-top:40px;
+    font-size:12px;
+    color:#a49b87;
+    font-family: -apple-system, sans-serif;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">NURA Bridge</div>
+    <h1>Breaking<br><em>language barriers.</em></h1>
+    <p class="sub">Type any medical word or phrase. Get the Mongolian translation, plus a plain-language explanation you could say out loud to family.</p>
+  </header>
+
+  <div class="panel">
+    <label for="term">Medical term (English)</label>
+    <div class="input-row">
+      <input type="text" id="term" placeholder="e.g. endometrium" autocomplete="off">
+      <button id="go">Translate</button>
+    </div>
+    <div class="examples">
+      Try: <button class="chip" data-term="endometrium">endometrium</button><button class="chip" data-term="pituitary gland">pituitary gland</button><button class="chip" data-term="chemotherapy">chemotherapy</button>
+    </div>
+    <div class="loading" id="loading">looking this up…</div>
+    <div class="error" id="error"></div>
+    <div class="result" id="result">
+      <div class="term-en" id="r-en"></div>
+      <div class="term-mn" id="r-mn"></div>
+      <div class="block">
+        <div class="block-label">Plain-language explanation</div>
+        <div class="block-text" id="r-plain" contenteditable="true" data-placeholder="Click to write your own explanation..."></div>
+      </div>
+      <div class="block">
+        <div class="block-label">If you only remember one thing</div>
+        <div class="block-text" id="r-analogy" contenteditable="true" data-placeholder="Click to write your own analogy..."></div>
+      </div>
+      <button id="copyCode" class="link-btn" style="margin-top:8px;">Copy for code (make this permanent)</button>
+      <div id="copyConfirm" style="display:none; font-size:12px; color:var(--moss); font-family:-apple-system,sans-serif; margin-top:6px;">Copied — paste into the TRANSLATIONS object in the code.</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:20px;">
+    <label>Browse a health checkup panel</label>
+    <p style="font-family:-apple-system,sans-serif; font-size:13px; color:#8a8271; margin:0 0 16px 0;">Tap any term to translate it. Grouped the way a lab report actually groups them.</p>
+    <div id="categories"></div>
+  </div>
+
+  <footer>
+    NURA Bridge helps translate clinical terminology into plain-language Mongolian explanations.
+  </footer>
+</div>
+
+<script>
+const input = document.getElementById('term');
+const goBtn = document.getElementById('go');
+const loading = document.getElementById('loading');
+const errorEl = document.getElementById('error');
+const resultEl = document.getElementById('result');
+
+// ── PERMANENT TRANSLATIONS ──
+// Anything added here loads instantly for every visitor, no API call needed.
+// Mongolian terms below are AI-drafted from general medical knowledge.
+// Plain-language explanation & analogy fields are left blank intentionally —
+// have a qualified reviewer fill those in (click the field on the live site,
+// type it in, then use "Copy for code" to paste the verified line here).
+const TRANSLATIONS = {
+  "height": { mongolian: "\u04e8\u043d\u0434\u04e9\u0440", plain: "Vertical measurement of a person standing upright.", analogy: "How tall you are." },
+  "weight": { mongolian: "\u0416\u0438\u043d", plain: "Total mass of the human body.", analogy: "How heavy you are on a scale." },
+  "body mass index (bmi)": { mongolian: "\u0411\u0438\u0435\u0438\u0439\u043d \u0436\u0438\u043d\u0433\u0438\u0439\u043d \u0438\u043d\u0434\u0435\u043a\u0441 (\u0411\u0416\u0418)", plain: "Value calculated from height and weight used to screen for body fat categories.", analogy: "A quick ratio checking if your weight fits your height." },
+  "blood pressure": { mongolian: "\u0426\u0443\u0441\u043d\u044b \u0434\u0430\u0440\u0430\u043b\u0442", plain: "The force blood exerts against vessel walls as the heart pumps.", analogy: "How hard blood pushes against your blood vessel walls." },
+  "pulse rate": { mongolian: "\u0410\u0433\u0448\u0438\u043b\u0442\u044b\u043d \u0434\u0430\u0432\u0442\u0430\u043c\u0436 / \u041c\u04e9\u043d\u0445\u0438\u0439\u043d \u043b\u0443\u0433\u0448\u0438\u043b\u0442 (\u041c\u04e9\u043d\u0445)", plain: "Frequency of heart contractions per minute.", analogy: "How many times your heart beats in a minute." },
+  "rbc (red blood cell count)": { mongolian: "\u0423\u043b\u0430\u0430\u043d \u044d\u0441\u0438\u0439\u043d \u0442\u043e\u043e (\u042d\u0440\u0438\u0442\u0440\u043e\u0446\u0438\u0442)", plain: "Total number of oxygen-carrying erythrocytes per microliter of blood.", analogy: "The total number of oxygen-carrying red cells you have." },
+  "wbc (white blood cell count)": { mongolian: "\u0426\u0430\u0433\u0430\u0430\u043d \u044d\u0441\u0438\u0439\u043d \u0442\u043e\u043e (\u041b\u0435\u0439\u043a\u043e\u0446\u0438\u0442)", plain: "Total concentration of infection-fighting leukocytes in circulation.", analogy: "The total number of immune defender cells present." },
+  "hemoglobin (hb)": { mongolian: "\u0413\u0435\u043c\u043e\u0433\u043b\u043e\u0431\u0438\u043d", plain: "Iron-containing protein in red blood cells that binds and transports oxygen.", analogy: "The actual protein inside red cells holding the oxygen." },
+  "hematocrit (hct)": { mongolian: "\u0413\u0435\u043c\u0430\u0442\u043e\u043a\u0440\u0438\u0442", plain: "Proportion of total blood volume occupied by red blood cells.", analogy: "The percentage of your blood space made of red cells." },
+  "mcv": { mongolian: "\u0423\u043b\u0430\u0430\u043d \u044d\u0441\u0438\u0439\u043d \u0434\u0443\u043d\u0434\u0430\u0436 \u044d\u0437\u043b\u044d\u0445\u04af\u04af\u043d", plain: "Average physical volume of individual red blood cells.", analogy: "The average size of your red blood cells." },
+  "mch": { mongolian: "\u0423\u043b\u0430\u0430\u043d \u044d\u0441 \u0434\u044d\u0445 \u0433\u0435\u043c\u043e\u0433\u043b\u043e\u0431\u0438\u043d\u044b \u0434\u0443\u043d\u0434\u0430\u0436 \u0445\u044d\u043c\u0436\u044d\u044d", plain: "Average mass of hemoglobin contained in each red blood cell.", analogy: "The average amount of oxygen protein inside each red cell." },
+  "mchc": { mongolian: "\u0423\u043b\u0430\u0430\u043d \u044d\u0441 \u0434\u044d\u0445 \u0433\u0435\u043c\u043e\u0433\u043b\u043e\u0431\u0438\u043d\u044b \u0434\u0443\u043d\u0434\u0430\u0436 \u043a\u043e\u043d\u0446\u0435\u043d\u0442\u0440\u0430\u043d\u0446\u0438", plain: "Average concentration of hemoglobin relative to red cell size.", analogy: "How densely filled your red cells are with oxygen protein." },
+  "rdw-cv": { mongolian: "\u0423\u043b\u0430\u0430\u043d \u044d\u0441\u0438\u0439\u043d \u0445\u044d\u043c\u0436\u044d\u044d\u043d\u0438\u0439 \u0445\u044d\u043b\u0431\u044d\u043b\u0437\u043b\u0438\u0439\u043d \u043a\u043e\u044d\u0444\u0444\u0438\u0446\u0438\u0435\u043d\u0442", plain: "Relative variation in red blood cell volume expressed as a percentage.", analogy: "A score showing how varied your red cell sizes are." },
+  "rdw-sd": { mongolian: "\u0423\u043b\u0430\u0430\u043d \u044d\u0441\u0438\u0439\u043d \u0445\u044d\u043c\u0436\u044d\u044d\u043d\u0438\u0439 \u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442 \u0445\u0430\u0437\u0430\u0439\u043b\u0442", plain: "Direct measurement of variation in red blood cell size distribution.", analogy: "The actual range measurement between your smallest and largest red cells." },
+  "neutrophils (neu%)": { mongolian: "\u041d\u0435\u0439\u0442\u0440\u043e\u0444\u0438\u043b (%)", plain: "Most abundant white blood cells that respond first to bacterial infections.", analogy: "The fast-acting white blood cells fighting off bacteria." },
+  "lymphocytes (lymph%)": { mongolian: "\u041b\u0438\u043c\u0444\u043e\u0446\u0438\u0442 (%)", plain: "Immune cells responsible for targeting viral infections and making antibodies.", analogy: "The white blood cells targeted at viruses and immune memory." },
+  "monocytes (mon%)": { mongolian: "\u041c\u043e\u043d\u043e\u0446\u0438\u0442 (%)", plain: "Large white blood cells that clear cellular debris and tackle ongoing infections.", analogy: "The cleanup cells removing dead material and long-term germs." },
+  "eosinophils (eos%)": { mongolian: "\u042d\u043e\u0437\u0438\u043d\u043e\u0444\u0438\u043b (%)", plain: "Granulocytes active during allergic responses and parasitic infections.", analogy: "The cells involved in allergies and parasite defense." },
+  "basophils (bas%)": { mongolian: "\u0411\u0430\u0437\u043e\u0444\u0438\u043b (%)", plain: "White blood cells that release histamine to trigger inflammatory responses.", analogy: "The cells triggering inflammation and allergic alarms." },
+  "platelets (plt)": { mongolian: "\u0422\u0440\u043e\u043c\u0431\u043e\u0446\u0438\u0442 (\u042f\u043b\u0442\u0430\u0441 \u044d\u0441)", plain: "Cell fragments essential for blood clotting and repairing blood vessel damage.", analogy: "Tiny cell pieces that seal cuts and stop bleeding." },
+  "pct": { mongolian: "\u0422\u0440\u043e\u043c\u0431\u043e\u043a\u0440\u0438\u0442", plain: "Percentage of total blood volume made up of platelets.", analogy: "The overall space platelets take up in your blood." },
+  "pdw": { mongolian: "\u0422\u0440\u043e\u043c\u0431\u043e\u0446\u0438\u0442\u044b\u043d \u0445\u044d\u043c\u0436\u044d\u044d\u043d\u0438\u0439 \u0445\u044d\u043b\u0431\u044d\u043b\u0437\u044d\u043b", plain: "Measurement of variation in platelet size across a sample.", analogy: "How much your platelets differ in size from one another." },
+  "hba1c": { mongolian: "\u0413\u043b\u0438\u043a\u043e\u0437\u0438\u043b\u0436\u0443\u0443\u043b\u0441\u0430\u043d \u0433\u0435\u043c\u043e\u0433\u043b\u043e\u0431\u0438\u043d (HbA1c)", plain: "Test reflecting average blood sugar levels over the past 2 to 3 months.", analogy: "A test showing your average blood sugar over the last few months." },
+  "total protein": { mongolian: "\u041d\u0438\u0439\u0442 \u0443\u0443\u0440\u0430\u0433", plain: "Measurement of albumin and globulin protein levels in blood fluid.", analogy: "The total amount of essential proteins in your blood stream." },
+  "albumin": { mongolian: "\u0410\u043b\u044c\u0431\u0443\u043c\u0438\u043d", plain: "Major liver-produced protein maintaining fluid balance in blood vessels.", analogy: "The primary protein keeping fluid inside your blood vessels." },
+  "ast": { mongolian: "\u0410\u0421\u0422 (\u0410\u0441\u043f\u0430\u0440\u0442\u0430\u0442\u0430\u043c\u0438\u043d\u043e\u0442\u0440\u0430\u043d\u0441\u0444\u0435\u0440\u0430\u0437\u0430)", plain: "Tissue enzyme found in liver, heart, and muscle that leaks when cells are damaged.", analogy: "An enzyme released into blood when liver or muscle tissue is stressed." },
+  "alt": { mongolian: "\u0410\u041b\u0422 (\u0410\u043b\u0430\u043d\u0438\u043d\u0430\u043c\u0438\u043d\u043e\u0442\u0440\u0430\u043d\u0441\u0444\u0435\u0440\u0430\u0437\u0430)", plain: "Enzyme concentrated mostly in liver cells; elevated levels point to liver injury.", analogy: "An enzyme specifically showing liver cell strain when elevated." },
+  "ggt": { mongolian: "\u0413\u0413\u0422 (\u0413\u0430\u043c\u043c\u0430-\u0433\u043b\u0443\u0442\u0430\u043c\u0438\u043b\u0442\u0440\u0430\u043d\u0441\u0444\u0435\u0440\u0430\u0437\u0430)", plain: "Enzyme sensitive to bile duct irritation, liver strain, and alcohol intake.", analogy: "An enzyme indicating bile duct issues or general liver stress." },
+  "total cholesterol": { mongolian: "\u041d\u0438\u0439\u0442 \u0445\u043e\u043b\u0435\u0441\u0442\u0435\u0440\u0438\u043d", plain: "Sum of all cholesterol types measured in a blood sample.", analogy: "The overall total of all cholesterol combined." },
+  "triglyceride": { mongolian: "\u0422\u0440\u0438\u0433\u043b\u0438\u0446\u0435\u0440\u0438\u0434", plain: "Primary form of stored fat used by the body for energy reserves.", analogy: "Unused calories stored as blood fat for extra energy." },
+  "hdl-c": { mongolian: "\u0418\u0414\u041b-\u0425\u043e\u043b\u0435\u0441\u0442\u0435\u0440\u0438\u043d (\u0418\u0434\u044d\u0432\u0445\u0442\u044d\u0439/\u0421\u0430\u0439\u043d \u0445\u043e\u043b\u0435\u0441\u0442\u0435\u0440\u0438\u043d)", plain: "\"Good\" cholesterol clearing excess fats from tissues back to the liver.", analogy: "The healthy cholesterol that helps clear out fat buildup." },
+  "ldl-c": { mongolian: "\u0411\u0414\u041b-\u0425\u043e\u043b\u0435\u0441\u0442\u0435\u0440\u0438\u043d (\u0411\u0430\u0433\u0430 \u043d\u044f\u0433\u0442\u0440\u0430\u043b\u0442\u0430\u0439/\u041c\u0443\u0443 \u0445\u043e\u043b\u0435\u0441\u0442\u0435\u0440\u0438\u043d)", plain: "\"Bad\" cholesterol carrying fats that can accumulate inside artery walls.", analogy: "The unhealthy cholesterol that can build up in blood vessels." },
+  "non-hdl-c": { mongolian: "\u0418\u0414\u041b \u0431\u0443\u0441 \u0445\u043e\u043b\u0435\u0441\u0442\u0435\u0440\u0438\u043d", plain: "Total cholesterol value with HDL subtracted, isolating all plaque-forming fats.", analogy: "All potentially harmful blood fats added together." },
+  "t3 (triiodothyronine)": { mongolian: "\u04223 (\u0422\u0440\u0438\u0439\u043e\u0434\u0442\u0438\u0440\u043e\u043d\u0438\u043d)", plain: "Active thyroid hormone directly affecting body metabolism.", analogy: "The main active hormone driving your metabolism." },
+  "t4 (thyroxine)": { mongolian: "\u04224 (\u0422\u0438\u0440\u043e\u043a\u0441\u0438\u043d)", plain: "Primary circulating hormone produced by thyroid, converted into active T3.", analogy: "The main thyroid hormone waiting to be converted into active T3." },
+  "tsh (thyroid-stimulating hormone)": { mongolian: "\u0422\u0428\u0413 (\u0422\u0438\u0440\u0435\u043e\u0442\u0440\u043e\u043f \u0434\u0430\u0430\u0432\u0430\u0440)", plain: "Brain hormone signaling the thyroid gland to increase or decrease hormone production.", analogy: "The signal from your brain telling your thyroid to work harder or slow down." },
+  "creatinine": { mongolian: "\u041a\u0440\u0435\u0430\u0442\u0438\u043d\u0438\u043d", plain: "Breakdown product of muscle activity cleared by kidney filtration.", analogy: "Normal muscle waste that healthy kidneys clear out daily." },
+  "blood urea nitrogen (bun)": { mongolian: "\u0426\u0443\u0441\u0430\u043d \u0434\u0430\u0445\u044c \u0448\u044d\u044d\u0433\u04af\u04af\u0440\u0438\u0439\u043d \u0430\u0437\u043e\u0442 (BUN)", plain: "Nitrogenous waste product from protein breakdown cleared by kidneys.", analogy: "Waste left over after your body processes food proteins." },
+  "uric acid": { mongolian: "\u0428\u044d\u044d\u0441\u043d\u0438\u0439 \u0445\u04af\u0447\u0438\u043b", plain: "Waste product from purine breakdown excreted in urine; elevated levels can form crystals.", analogy: "A waste compound that can cause joint pain or stones if levels get high." },
+  "egfr (estimated glomerular filtration rate)": { mongolian: "\u0422\u04af\u04af\u0434\u0433\u044d\u043d\u0446\u0440\u0438\u0439\u043d \u0448\u04af\u04af\u0445 \u0445\u0443\u0440\u0434 (eGFR)", plain: "Calculated estimate of blood volume filtered by kidneys per minute.", analogy: "A general score of your kidney's filtering speed." },
+  "urine protein": { mongolian: "\u0428\u044d\u044d\u0441\u044d\u043d \u0434\u044d\u0445 \u0443\u0443\u0440\u0430\u0433", plain: "Detection of protein in urine, indicating possible kidney filter leakage.", analogy: "Protein found in urine, showing possible kidney filter strain." },
+  "urine albumin": { mongolian: "\u0428\u044d\u044d\u0441\u044d\u043d \u0434\u044d\u0445 \u0430\u043b\u044c\u0431\u0443\u043c\u0438\u043d", plain: "Sensitive test for small amounts of blood protein leaking into urine.", analogy: "A test catching early, tiny leaks of protein into urine." },
+  "urine white blood cells": { mongolian: "\u0428\u044d\u044d\u0441\u044d\u043d \u0434\u044d\u0445 \u0446\u0430\u0433\u0430\u0430\u043d \u044d\u0441", plain: "Leukocytes present in urine, usually indicating urinary tract inflammation or infection.", analogy: "Immune cells in urine indicating inflammation or a bladder infection." },
+  "urine creatinine": { mongolian: "\u0428\u044d\u044d\u0441\u044d\u043d \u0434\u044d\u0445 \u043a\u0440\u0435\u0430\u0442\u0438\u043d\u0438\u043d", plain: "Concentration of creatinine cleared into urine over a set timeframe.", analogy: "The amount of muscle waste actually exiting in urine." },
+  "blood in urine": { mongolian: "\u0428\u044d\u044d\u0441\u044d\u043d \u0434\u044d\u0445 \u0446\u0443\u0441 (\u0413\u0435\u043c\u0430\u0442\u0443\u0440\u0438)", plain: "Red blood cells detected in urine, signaling urinary tract irritation.", analogy: "Red blood cells leaking into urine." },
+  "urine glucose": { mongolian: "\u0428\u044d\u044d\u0441\u044d\u043d \u0434\u044d\u0445 \u0441\u0430\u0445\u0430\u0440", plain: "Sugar present in urine when blood sugar levels exceed kidney reabsorption limits.", analogy: "High blood sugar spilling over into your urine." },
+  "bilirubin": { mongolian: "\u0411\u0438\u043b\u0438\u0440\u0443\u0431\u0438\u043d", plain: "Yellow waste product from old red blood cells appearing in urine due to liver/bile issues.", analogy: "Red cell waste showing up in urine when liver/bile drainage is hindered." },
+  "urobilinogen": { mongolian: "\u0423\u0440\u043e\u0431\u0438\u043b\u0438\u043d\u043e\u0433\u0435\u043d", plain: "Breakdown product of bilirubin processed by gut bacteria and excreted in urine.", analogy: "A natural byproduct of liver processing found in small amounts in urine." },
+  "ketone": { mongolian: "\u041a\u0435\u0442\u043e\u043d", plain: "Chemical compounds formed when the body burns fat instead of carbohydrates for energy.", analogy: "Compounds formed when your body burns fat for fuel instead of sugar." },
+  "nitrite": { mongolian: "\u041d\u0438\u0442\u0440\u0438\u0442", plain: "Chemical produced in urine when certain bacteria are present during an infection.", analogy: "A substance produced by bacteria causing a urinary infection." },
+  "specific gravity": { mongolian: "\u0425\u0430\u0440\u044c\u0446\u0430\u043d\u0433\u0443\u0439 \u043d\u044f\u0433\u0442 (\u0428\u044d\u044d\u0441\u043d\u0438\u0439 \u043d\u044f\u0433\u0442)", plain: "Concentration measurement of urine compared to water.", analogy: "How concentrated or diluted your urine is." },
+  "urine ph": { mongolian: "\u0428\u044d\u044d\u0441\u043d\u0438\u0439 \u0440\u041d (\u0425\u04af\u0447\u0438\u043b\u043b\u044d\u0433 \u0447\u0430\u043d\u0430\u0440)", plain: "Acid-base balance measurement of urine.", analogy: "How acidic or alkaline your urine is." },
+  "protein-to-creatinine ratio (p/c)": { mongolian: "\u0423\u0443\u0440\u0430\u0433 \u0431\u0430 \u043a\u0440\u0435\u0430\u0442\u0438\u043d\u0438\u043d\u044b \u0445\u0430\u0440\u044c\u0446\u0430\u0430", plain: "Ratio estimating total daily protein excretion from a single urine sample.", analogy: "A ratio giving an estimate of daily protein loss in urine." },
+  "albumin-to-creatinine ratio (a/c)": { mongolian: "\u0410\u043b\u044c\u0431\u0443\u043c\u0438\u043d \u0431\u0430 \u043a\u0440\u0435\u0430\u0442\u0438\u043d\u0438\u043d\u044b \u0445\u0430\u0440\u044c\u0446\u0430\u0430", plain: "Standard ratio used to catch early kidney tissue damage, especially in diabetes.", analogy: "A precise test checking for early kidney filter damage." },
+  "ca 19-9 (pancreatic)": { mongolian: "CA 19-9 (\u041d\u043e\u0439\u0440 \u0431\u0443\u043b\u0447\u0438\u0440\u0445\u0430\u0439\u043d \u0445\u0430\u0432\u0434\u0440\u044b\u043d \u043c\u0430\u0440\u043a\u0435\u0440)", plain: "Glycoprotein marker monitored mainly for pancreatic conditions.", analogy: "A blood marker monitored for pancreatic tissue health." },
+  "ca 125 (ovarian)": { mongolian: "CA 125 (\u04e8\u043d\u0434\u0433\u04e9\u0432\u0447\u043d\u0438\u0439 \u0445\u0430\u0432\u0434\u0440\u044b\u043d \u043c\u0430\u0440\u043a\u0435\u0440)", plain: "Protein marker evaluated mainly during ovarian health workups.", analogy: "A blood marker monitored for ovarian tissue health." },
+  "afp (liver)": { mongolian: "\u0410\u0424\u041f (\u0410\u043b\u044c\u0444\u0430-\u0444\u0435\u0442\u043e\u043f\u0440\u043e\u0442\u0435\u0438\u043d - \u042d\u043b\u044d\u0433\u043d\u0438\u0439 \u043c\u0430\u0440\u043a\u0435\u0440)", plain: "Protein marker evaluated during liver health screenings.", analogy: "A protein marker used to check liver health." },
+  "hbsag (hepatitis b)": { mongolian: "HBsAg (\u0413\u0435\u043f\u0430\u0442\u0438\u0442 \u0412 \u0432\u0438\u0440\u0443\u0441\u044b\u043d \u0433\u0430\u0434\u0430\u0440\u0433\u0443\u0443\u0433\u0438\u0439\u043d \u0430\u043d\u0442\u0438\u0433\u0435\u043d)", plain: "Surface protein confirming active Hepatitis B viral presence.", analogy: "A protein confirming an active Hepatitis B infection." },
+  "anti-hcv (hepatitis c)": { mongolian: "Anti-HCV (\u0413\u0435\u043f\u0430\u0442\u0438\u0442 \u0421 \u0432\u0438\u0440\u0443\u0441\u044b\u043d \u044d\u0441\u0440\u044d\u0433 \u0431\u0438\u0435)", plain: "Antibodies created following exposure to the Hepatitis C virus.", analogy: "Immune defense markers showing past or present exposure to Hepatitis C." },
+  "h. pylori (urea breath test)": { mongolian: "\u0425\u0435\u043b\u0438\u043a\u043e\u0431\u0430\u043a\u0442\u0435\u0440 \u043f\u0438\u043b\u043e\u0440\u0438 (\u0410\u043c\u044c\u0441\u0433\u0430\u043b\u044b\u043d \u0441\u043e\u0440\u0438\u043b)", plain: "Breath analysis detecting gas produced by H. pylori stomach bacteria.", analogy: "A breath sample checking for stomach-ulcer bacteria." },
+  "fecal immunochemical test (fit-hb)": { mongolian: "\u041d\u0430\u0440\u0438\u0439\u043d/\u0411\u04af\u0434\u04af\u04af\u043d \u0433\u044d\u0434\u044d\u0441\u043d\u0438\u0439 \u0434\u0430\u043b\u0434 \u0446\u0443\u0441\u044b\u0433 \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0445 \u0441\u043e\u0440\u0438\u043b (FIT)", plain: "Stool screening assay detecting hidden blood originating from the colon.", analogy: "A stool check searching for tiny, unseen blood traces in the digestive tract." },
+  "ecg (ai-assisted)": { mongolian: "\u0417\u04af\u0440\u0445\u043d\u0438\u0439 \u0446\u0430\u0445\u0438\u043b\u0433\u0430\u0430\u043d \u0431\u0438\u0447\u043b\u044d\u0433 (\u0445\u0438\u0439\u043c\u044d\u043b \u043e\u044e\u0443\u043d \u0443\u0445\u0430\u0430\u043d\u044b \u0442\u0443\u0441\u043b\u0430\u043c\u0436\u0442\u0430\u0439)", plain: "Heart rhythm recording analyzed with software assistance to identify abnormal beats.", analogy: "A heart rhythm test evaluated with smart software help." },
+  "3d mammography (ai-assisted breast screening)": { mongolian: "3D \u041c\u0430\u043c\u043c\u043e\u0433\u0440\u0430\u0444\u0438 (\u0445\u0438\u0439\u043c\u044d\u043b \u043e\u044e\u0443\u043d \u0443\u0445\u0430\u0430\u043d\u0442 \u0445\u04e9\u0445\u043d\u0438\u0439 \u0441\u043a\u0430\u043d)", plain: "Layered breast X-ray scan analyzed with algorithm assistance for early spot detection.", analogy: "Detailed multi-angle breast X-rays scanned with software support." },
+  "audiometry (hearing test)": { mongolian: "\u0410\u0443\u0434\u0438\u043e\u043c\u0435\u0442\u0440\u0438 (\u0421\u043e\u043d\u0441\u0433\u043e\u043b\u044b\u043d \u0442\u0435\u0441\u0442)", plain: "Test assessing hearing sensitivity across different audio frequencies.", analogy: "A standard tone-based hearing exam." },
+  "eye vision test": { mongolian: "\u0425\u0430\u0440\u0430\u0430\u043d\u044b \u0442\u0435\u0441\u0442", plain: "Measurement of visual sharpness at set distances.", analogy: "A standard eye chart exam testing visual clarity." },
+  "fundoscopy (diabetic retinopathy screening)": { mongolian: "\u041d\u04af\u0434\u043d\u0438\u0439 \u0451\u0440\u043e\u043e\u043b\u044b\u043d \u0434\u0443\u0440\u0430\u043d (\u0414\u0438\u0430\u0431\u0435\u0442\u0438\u0439\u043d \u0440\u0435\u0442\u0438\u043d\u043e\u043f\u0430\u0442\u0438 \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433)", plain: "Visual exam of the back of the eye evaluating retinal blood vessels.", analogy: "An eye examination inspecting delicate blood vessels at the back of the eye." },
+  "dexa scan (bone density)": { mongolian: "DEXA \u0441\u043a\u0430\u043d (\u042f\u0441\u043d\u044b \u043d\u044f\u0433\u0442\u0440\u0430\u043b \u0442\u043e\u0434\u043e\u0440\u0445\u043e\u0439\u043b\u043e\u0445)", plain: "Low-dose X-ray scan measuring bone mineral thickness to screen for osteoporosis.", analogy: "An X-ray scan measuring how strong and dense your bones are." },
+  "full body composition scan (body fat, lean mass, visceral fat)": { mongolian: "\u0411\u0438\u0435\u0438\u0439\u043d \u0431\u04af\u0442\u0446\u0438\u0439\u043d \u0431\u04af\u0440\u044d\u043d \u0441\u043a\u0430\u043d (\u04e9\u0445, \u0431\u0443\u043b\u0447\u0438\u043d, \u0434\u043e\u0442\u043e\u0440 \u04e9\u04e9\u0445)", plain: "Imaging scan measuring overall percentages of muscle, external fat, and deep organ fat.", analogy: "A scan measuring exact amounts of muscle, skin-level fat, and organ-level fat." },
+  "colposcopy (cervical screening)": { mongolian: "\u041a\u043e\u043b\u044c\u043f\u043e\u0441\u043a\u043e\u043f\u0438 (\u0423\u043c\u0430\u0439\u043d \u0445\u04af\u0437\u04af\u04af\u043d\u0438\u0439 \u0434\u0443\u0440\u0430\u043d)", plain: "Magnified examination of cervical tissue to identify abnormal areas.", analogy: "A close-up examination of cervical cells using a magnifying lens." },
+  "lung screening": { mongolian: "\u0423\u0443\u0448\u0433\u0438\u043d\u044b \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Assessment evaluating overall lung health and checking for early damage.", analogy: "Imaging and checks evaluating overall lung conditions." },
+  "liver screening": { mongolian: "\u042d\u043b\u044d\u0433\u043d\u0438\u0439 \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Blood work and imaging checking for liver scarring, fat, or growths.", analogy: "Tests checking for liver fat, scarring, or tissue changes." },
+  "kidney screening": { mongolian: "\u0411\u04e9\u04e9\u0440\u043d\u0438\u0439 \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Blood, urine, and imaging checks assessing kidney structural health.", analogy: "Combined tests ensuring your kidneys are healthy and filtering well." },
+  "pancreatic screening": { mongolian: "\u041d\u043e\u0439\u0440 \u0431\u0443\u043b\u0447\u0438\u0440\u0445\u0430\u0439\u043d \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Diagnostic imaging evaluating pancreatic tissue structure and ducts.", analogy: "Targeted scans checking the structure of the pancreas." },
+  "coronary heart disease screening": { mongolian: "\u0417\u04af\u0440\u0445\u043d\u0438\u0439 \u0438\u0448\u0435\u043c\u0438 \u04e9\u0432\u0447\u043d\u0438\u0439 \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Evaluation checking heart arteries for blockages or calcium buildup.", analogy: "Checks looking for arterial narrowing or buildup around the heart." },
+  "emphysema / copd screening": { mongolian: "\u042d\u043c\u0444\u0438\u0437\u0435\u043c / \u0423\u0443\u0448\u0433\u0438\u043d\u044b \u0430\u0440\u0445\u0430\u0433 \u0431\u04e9\u0433\u043b\u04e9\u0440\u04e9\u043b\u0442\u04e9\u0442 \u04e9\u0432\u0447\u043d\u0438\u0439 (\u0423\u0410\u0411\u04e8) \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Breathing tests evaluating chronic airway blockage and air sac integrity.", analogy: "Breathing checks seeing if lung airways are clear and elastic." },
+  "visceral fat analysis": { mongolian: "\u0414\u043e\u0442\u043e\u0440 \u04e9\u04e9\u0445\u043d\u0438\u0439 \u0448\u0438\u043d\u0436\u0438\u043b\u0433\u044d\u044d", plain: "Specific measurement of deep fat surrounding abdominal organs.", analogy: "A scan measuring fat stored deep inside the belly around organs." },
+  "fatty liver detection": { mongolian: "\u042d\u043b\u044d\u0433\u043d\u0438\u0439 \u04e9\u04e9\u0445\u0436\u0438\u043b\u0442 \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Ultrasound or scan quantification of fat stored inside liver tissue.", analogy: "Scans checking how much extra fat is stored inside liver cells." },
+  "liver hypertrophy": { mongolian: "\u042d\u043b\u044d\u0433\u043d\u0438\u0439 \u0442\u043e\u043c\u0440\u043e\u043b (\u0413\u0438\u043f\u0435\u0440\u0442\u0440\u043e\u0444\u0438)", plain: "Physical expansion or enlargement of liver tissue.", analogy: "Physical enlargement of the liver tissue." },
+  "kidney stones": { mongolian: "\u0411\u04e9\u04e9\u0440\u043d\u0438\u0439 \u0447\u0443\u043b\u0443\u0443", plain: "Hard mineral deposits formed within the kidneys that can obstruct flow.", analogy: "Hardened mineral buildup inside the kidneys." },
+  "bone mineral density": { mongolian: "\u042f\u0441\u043d\u044b \u044d\u0440\u0434\u044d\u0441\u0442 \u043d\u044f\u0433\u0442\u0440\u0430\u043b", plain: "Concentration of calcium and minerals per square centimeter of bone matrix.", analogy: "A score showing how solid and mineral-packed your bones are." },
+  "cbc \u2014 complete blood count": { mongolian: "\u0426\u0443\u0441\u043d\u044b \u0434\u044d\u043b\u0433\u044d\u0440\u044d\u043d\u0433\u04af\u0439 \u0448\u0438\u043d\u0436\u0438\u043b\u0433\u044d\u044d", plain: "Comprehensive test measuring overall red cells, white cells, and platelets.", analogy: "A main snapshot counting all cells in your blood." },
+  "liver function test": { mongolian: "\u042d\u043b\u044d\u0433\u043d\u0438\u0439 \u04af\u0439\u043b \u0430\u0436\u0438\u043b\u043b\u0430\u0433\u0430\u0430\u043d\u044b \u0448\u0438\u043d\u0436\u0438\u043b\u0433\u044d\u044d", plain: "Group of blood tests evaluating liver enzymes, protein production, and waste removal.", analogy: "Tests checking how healthy and active your liver is." },
+  "lipid profile test": { mongolian: "\u041b\u0438\u043f\u0438\u0434\u0438\u0439\u043d \u043f\u0440\u043e\u0444\u0438\u043b\u044c \u0448\u0438\u043d\u0436\u0438\u043b\u0433\u044d\u044d (\u04e8\u04e9\u0445 \u0442\u043e\u0441\u043d\u044b \u0441\u043e\u0440\u0438\u043b)", plain: "Panel evaluating blood concentrations of cholesterol and triglycerides.", analogy: "A full panel checking the fats in your blood." },
+  "thyroid function test": { mongolian: "\u0411\u0430\u043c\u0431\u0430\u0439 \u0431\u0443\u043b\u0447\u0438\u0440\u0445\u0430\u0439\u043d \u0444\u0443\u043d\u043a\u0446\u0438\u0439\u043d \u0448\u0438\u043d\u0436\u0438\u043b\u0433\u044d\u044d", plain: "Blood tests measuring hormones regulating metabolic speed.", analogy: "Tests checking how fast your thyroid controls your energy production." },
+  "kidney function test": { mongolian: "\u0411\u04e9\u04e9\u0440\u043d\u0438\u0439 \u04af\u0439\u043b \u0430\u0436\u0438\u043b\u043b\u0430\u0433\u0430\u0430\u043d\u044b \u0448\u0438\u043d\u0436\u0438\u043b\u0433\u044d\u044d", plain: "Panel evaluating renal waste removal and filtration efficiency.", analogy: "Blood checks seeing how well your kidneys filter waste." },
+  "urinalysis": { mongolian: "\u0428\u044d\u044d\u0441\u043d\u0438\u0439 \u0435\u0440\u04e9\u043d\u0445\u0438\u0439 \u0448\u0438\u043d\u0436\u0438\u043b\u0433\u044d\u044d", plain: "Physical, chemical, and microscopic testing of urine.", analogy: "Routine lab analysis checking urine clarity, chemical levels, and cells." },
+  "tumor markers": { mongolian: "\u0425\u0430\u0432\u0434\u0440\u044b\u043d \u043c\u0430\u0440\u043a\u0435\u0440\u0443\u0443\u0434", plain: "Substances in blood often elevated in the presence of certain cancers.", analogy: "Blood proteins monitored for signs of tissue changes or tumors." },
+  "infectious disease screening": { mongolian: "\u0425\u0430\u043b\u0434\u0432\u0430\u0440\u0442 \u04e9\u0432\u0447\u043d\u0438\u0439 \u0438\u043b\u0440\u04af\u04af\u043b\u044d\u0433", plain: "Tests screening blood for active or prior viral and bacterial exposure.", analogy: "Standard tests checking for underlying infections." },
+  "low-dose ct screening": { mongolian: "\u0411\u0430\u0433\u0430 \u0442\u0443\u043d\u0442\u0430\u0439 \u041a\u0422 \u0441\u043a\u0430\u043d (\u041a\u043e\u043c\u043f\u044c\u044e\u0442\u0435\u0440 \u0442\u043e\u043c\u043e\u0433\u0440\u0430\u0444\u0438)", plain: "Cross-sectional low-radiation CT scan screening lungs for early nodules.", analogy: "A fast 3D chest scan using minimal radiation to screen the lungs." },
+};
+
+async function translate(term){
+  if(!term.trim()) return;
+  loading.classList.add('show');
+  errorEl.classList.remove('show');
+  resultEl.classList.remove('show');
+  goBtn.disabled = true;
+
+  const key = term.trim().toLowerCase();
+  const fixed = TRANSLATIONS[key];
+  if(fixed){
+    renderResult(term, fixed.mongolian, fixed.plain, fixed.analogy);
+    loading.classList.remove('show');
+    goBtn.disabled = false;
+    return;
+  }
+
+  try{
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(term)}&langpair=en|mn`;
+    const response = await fetch(url);
+    const data = await response.json();
+    const mongolian = data?.responseData?.translatedText || "(no translation found)";
+    renderResult(term, mongolian, "", "");
+  }catch(err){
+    errorEl.textContent = "Couldn't reach the translator. Try again in a moment.";
+    errorEl.classList.add('show');
+    console.error(err);
+  }finally{
+    loading.classList.remove('show');
+    goBtn.disabled = false;
+  }
+}
+
+
+function renderResult(term, mongolian, plain, analogy){
+  document.getElementById('r-en').textContent = term;
+  document.getElementById('r-mn').textContent = mongolian;
+  const key = 'nura_note_' + term.trim().toLowerCase();
+  const saved = JSON.parse(localStorage.getItem(key) || 'null');
+  document.getElementById('r-plain').textContent = saved?.plain || plain || "";
+  document.getElementById('r-analogy').textContent = saved?.analogy || analogy || "";
+  resultEl.classList.add('show');
+  resultEl.dataset.term = term;
+}
+
+function saveNote(){
+  const term = resultEl.dataset.term;
+  if(!term) return;
+  const key = 'nura_note_' + term.trim().toLowerCase();
+  localStorage.setItem(key, JSON.stringify({
+    plain: document.getElementById('r-plain').textContent,
+    analogy: document.getElementById('r-analogy').textContent
+  }));
+}
+document.getElementById('r-plain').addEventListener('blur', saveNote);
+document.getElementById('r-analogy').addEventListener('blur', saveNote);
+
+document.getElementById('copyCode').addEventListener('click', () => {
+  const term = resultEl.dataset.term;
+  if(!term) return;
+  const mongolian = document.getElementById('r-mn').textContent;
+  const plain = document.getElementById('r-plain').textContent;
+  const analogy = document.getElementById('r-analogy').textContent;
+  const snippet = `  "${term.trim().toLowerCase()}": { mongolian: "${mongolian}", plain: "${plain}", analogy: "${analogy}" },`;
+  navigator.clipboard.writeText(snippet).then(() => {
+    const c = document.getElementById('copyConfirm');
+    c.style.display = 'block';
+    setTimeout(() => c.style.display = 'none', 3000);
+  });
+});
+
+goBtn.addEventListener('click', () => translate(input.value));
+input.addEventListener('keydown', e => { if(e.key === 'Enter') translate(input.value); });
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    input.value = chip.dataset.term;
+    translate(chip.dataset.term);
+  });
+});
+
+const panels = [
+  { title: "Basic measurements", terms: ["Height", "Weight", "Body mass index (BMI)", "Blood pressure", "Pulse rate"] },
+  { title: "CBC — Complete Blood Count", terms: ["RBC (red blood cell count)", "WBC (white blood cell count)", "Hemoglobin (Hb)", "Hematocrit (HCT)", "MCV", "MCH", "MCHC", "RDW-CV", "RDW-SD", "Neutrophils (NEU%)", "Lymphocytes (LYMPH%)", "Monocytes (MON%)", "Eosinophils (EOS%)", "Basophils (BAS%)", "Platelets (PLT)", "PCT", "PDW"] },
+  { title: "Glycosylated hemoglobin test", terms: ["HbA1c"] },
+  { title: "Liver function test", terms: ["Total protein", "Albumin", "AST", "ALT", "GGT"] },
+  { title: "Lipid profile test", terms: ["Total cholesterol", "Triglyceride", "HDL-C", "LDL-C", "Non-HDL-C"] },
+  { title: "Thyroid function test", terms: ["T3 (triiodothyronine)", "T4 (thyroxine)", "TSH (thyroid-stimulating hormone)"] },
+  { title: "Kidney function test", terms: ["Creatinine", "Blood urea nitrogen (BUN)", "Uric acid", "eGFR (estimated glomerular filtration rate)"] },
+  { title: "Urinalysis", terms: ["Urine protein", "Urine albumin", "Urine white blood cells", "Urine creatinine", "Blood in urine", "Urine glucose", "Bilirubin", "Urobilinogen", "Ketone", "Nitrite", "Specific gravity", "Urine pH", "Protein-to-creatinine ratio (P/C)", "Albumin-to-creatinine ratio (A/C)"] },
+  { title: "Tumor markers", terms: ["CA 19-9 (pancreatic)", "CA 125 (ovarian)", "AFP (liver)"] },
+  { title: "Infectious disease screening", terms: ["HBsAg (Hepatitis B)", "Anti-HCV (Hepatitis C)", "H. pylori (urea breath test)"] },
+  { title: "Cancer & organ screening", terms: ["Fecal immunochemical test (FIT-Hb)", "ECG (AI-assisted)", "3D mammography (AI-assisted breast screening)", "Audiometry (hearing test)", "Eye vision test", "Fundoscopy (diabetic retinopathy screening)", "DEXA scan (bone density)", "Full body composition scan (body fat, lean mass, visceral fat)", "Colposcopy (cervical screening)"] },
+  { title: "Low-dose CT screening", terms: ["Lung screening", "Liver screening", "Kidney screening", "Pancreatic screening", "Coronary heart disease screening", "Emphysema / COPD screening", "Visceral fat analysis", "Fatty liver detection", "Liver hypertrophy", "Kidney stones", "Bone mineral density"] }
+];
+
+const catContainer = document.getElementById('categories');
+panels.forEach(p => {
+  const catDiv = document.createElement('div');
+  catDiv.className = 'cat';
+  const title = document.createElement('div');
+  title.className = 'cat-title';
+  title.textContent = p.title;
+  const termsDiv = document.createElement('div');
+  termsDiv.className = 'cat-terms';
+  p.terms.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.textContent = t;
+    btn.addEventListener('click', () => {
+      input.value = t;
+      translate(t);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    termsDiv.appendChild(btn);
+  });
+  catDiv.appendChild(title);
+  catDiv.appendChild(termsDiv);
+  catContainer.appendChild(catDiv);
+});
+</script>
+</body>
+</html>
