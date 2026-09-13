@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NURA Bridge — Breaking Language Barriers</title>
+<style>
+  :root{
+    --paper: #F6F1E7;
+    --ink: #2B2620;
+    --rust: #0D909E;
+    --moss: #0A6F7A;
+    --line: #D8CFBB;
+    --card: #FFFDF8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    min-height:100vh;
+    padding:48px 20px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  header{margin-bottom:36px;}
+  .mark{
+    font-family: Georgia, serif;
+    font-style:italic;
+    font-size:15px;
+    color:var(--moss);
+    letter-spacing:0.02em;
+    margin-bottom:6px;
+  }
+  h1{
+    font-size:34px;
+    line-height:1.15;
+    margin:0 0 12px 0;
+    font-weight:400;
+  }
+  h1 em{ color:inherit; font-style:normal; }
+  p.sub{
+    font-size:16px;
+    line-height:1.55;
+    color:#5a5348;
+    max-width:56ch;
+    margin:0;
+  }
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:28px;
+    margin-top:32px;
+  }
+  label{
+    display:block;
+    font-size:13px;
+    color:#7a725f;
+    margin-bottom:8px;
+    font-family: -apple-system, sans-serif;
+  }
+  .input-row{display:flex; gap:10px;}
+  input[type=text]{
+    flex:1;
+    font-family: Georgia, serif;
+    font-size:19px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    background:#fff;
+    color:var(--ink);
+  }
+  input[type=text]:focus{outline:none; border-color:var(--rust);}
+  button{
+    font-family: -apple-system, sans-serif;
+    font-size:15px;
+    font-weight:600;
+    background:var(--rust);
+    color:#fff;
+    border:none;
+    border-radius:2px;
+    padding:0 22px;
+    cursor:pointer;
+    transition: background 0.15s ease;
+  }
+  button:hover{background:var(--moss);}
+  button:disabled{background:#c9b8ab; cursor:default;}
+  .examples{
+    margin-top:14px;
+    font-size:13px;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+  }
+  .examples button.chip{
+    background:none;
+    color:var(--moss);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:4px 12px;
+    font-size:13px;
+    font-weight:400;
+    margin:0 6px 6px 0;
+  }
+  .examples button.chip:hover{background:#eee6d4;}
+  .result{
+    margin-top:26px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    display:none;
+  }
+  .result.show{display:block;}
+  .term-en{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+    margin-bottom:4px;
+  }
+  .term-mn{
+    font-size:28px;
+    color:var(--rust);
+    margin:0 0 18px 0;
+  }
+  .block{margin-bottom:16px;}
+  .block-label{
+    font-size:12px;
+    color:var(--moss);
+    font-family: -apple-system, sans-serif;
+    margin-bottom:4px;
+  }
+  .block-text{font-size:17px; line-height:1.6;}
+  .block-text[contenteditable]{
+    outline:none;
+    border-bottom:1px dashed transparent;
+    cursor:text;
+  }
+  .block-text[contenteditable]:hover{border-bottom-color:var(--line);}
+  .block-text[contenteditable]:focus{border-bottom-color:var(--rust);}
+  .block-text[contenteditable]:empty:before{
+    content: attr(data-placeholder);
+    color:#a49b87;
+    font-style:italic;
+  }
+  .loading{
+    display:none;
+    margin-top:20px;
+    font-size:14px;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+    font-style:italic;
+  }
+  .loading.show{display:block;}
+  .cat{
+    margin-bottom:18px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .cat:last-child{border-bottom:none; margin-bottom:0; padding-bottom:0;}
+  .cat-title{
+    font-family: -apple-system, sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--moss);
+    margin-bottom:8px;
+  }
+  .cat-terms{display:flex; flex-wrap:wrap; gap:6px;}
+  .key-notice{
+    margin-top:14px;
+    font-size:13px;
+    color:#8a8271;
+    font-family: -apple-system, sans-serif;
+    background:#f0ece0;
+    padding:10px 14px;
+    border-radius:2px;
+  }
+  .key-notice.hidden{display:none;}
+  .link-btn{
+    background:none;
+    border:none;
+    color:var(--rust);
+    font-weight:600;
+    font-size:13px;
+    padding:0;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .key-form{
+    display:none;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .key-form.show{display:block;}
+  .key-form label{
+    font-size:12px;
+    color:#7a725f;
+    font-family:-apple-system,sans-serif;
+    margin-bottom:6px;
+  }
+  .missing-note{
+    font-size:14px;
+    color:#8a8271;
+    font-style:italic;
+  }
+  .error{
+    display:none;
+    margin-top:16px;
+    font-size:14px;
+    color:var(--rust);
+    font-family: -apple-system, sans-serif;
+  }
+  .error.show{display:block;}
+  footer{
+    margin-top:40px;
+    font-size:12px;
+    color:#a49b87;
+    font-family: -apple-system, sans-serif;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark">NURA Bridge</div>
+    <h1>Breaking<br><em>language barriers.</em></h1>
+    <p class="sub">Type any medical word or phrase. Get the Mongolian translation, plus a plain-language explanation you could say out loud to family.</p>
+  </header>
+
+  <div class="panel">
+    <label for="term">Medical term (English)</label>
+    <div class="input-row">
+      <input type="text" id="term" placeholder="e.g. endometrium" autocomplete="off">
+      <button id="go">Translate</button>
+    </div>
+    <div class="examples">
+      Try: <button class="chip" data-term="endometrium">endometrium</button><button class="chip" data-term="pituitary gland">pituitary gland</button><button class="chip" data-term="chemotherapy">chemotherapy</button>
+    </div>
+    <div class="loading" id="loading">looking this up…</div>
+    <div class="error" id="error"></div>
+    <div class="result" id="result">
+      <div class="term-en" id="r-en"></div>
+      <div class="term-mn" id="r-mn"></div>
+      <div class="block">
+        <div class="block-label">Plain-language explanation</div>
+        <div class="block-text" id="r-plain" contenteditable="true" data-placeholder="Click to write your own explanation..."></div>
+      </div>
+      <div class="block">
+        <div class="block-label">If you only remember one thing</div>
+        <div class="block-text" id="r-analogy" contenteditable="true" data-placeholder="Click to write your own analogy..."></div>
+      </div>
+      <button id="copyCode" class="link-btn" style="margin-top:8px;">Copy for code (make this permanent)</button>
+      <div id="copyConfirm" style="display:none; font-size:12px; color:var(--moss); font-family:-apple-system,sans-serif; margin-top:6px;">Copied — paste into the TRANSLATIONS object in the code.</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:20px;">
+    <label>Browse a health checkup panel</label>
+    <p style="font-family:-apple-system,sans-serif; font-size:13px; color:#8a8271; margin:0 0 16px 0;">Tap any term to translate it. Grouped the way a lab report actually groups them.</p>
+    <div id="categories"></div>
+  </div>
+
+  <footer>
+    NURA Bridge helps translate clinical terminology into plain-language Mongolian explanations.
+  </footer>
+</div>
+
+<script>
+const input = document.getElementById('term');
+const goBtn = document.getElementById('go');
+const loading = document.getElementById('loading');
+const errorEl = document.getElementById('error');
+const resultEl = document.getElementById('result');
+
+// ── PERMANENT TRANSLATIONS ──
+// Anything added here loads instantly for every visitor, no API call needed.
+// Mongolian terms below are AI-drafted from general medical knowledge.
+// Plain-language explanation & analogy fields are left blank intentionally —
+// have a qualified reviewer fill those in (click the field on the live site,
+// type it in, then use "Copy for code" to paste the verified line here).
+const TRANSLATIONS = {
+  "height": { mongolian: "Өндөр", plain: "", analogy: "" },
+  "weight": { mongolian: "Жин", plain: "", analogy: "" },
+  "body mass index (bmi)": { mongolian: "Биеийн жингийн индекс (БЖИ)", plain: "", analogy: "" },
+  "blood pressure": { mongolian: "Цусны даралт", plain: "", analogy: "" },
+  "pulse rate": { mongolian: "Судасны цохилт", plain: "", analogy: "" },
+
+  "rbc (red blood cell count)": { mongolian: "Улаан цусны эсийн тоо (RBC)", plain: "", analogy: "" },
+  "wbc (white blood cell count)": { mongolian: "Цагаан цусны эсийн тоо (WBC)", plain: "", analogy: "" },
+  "hemoglobin (hb)": { mongolian: "Гемоглобин (Hb)", plain: "", analogy: "" },
+  "hematocrit (hct)": { mongolian: "Гематокрит (HCT)", plain: "", analogy: "" },
+  "mcv": { mongolian: "Дундаж эритроцитын эзэлхүүн (MCV)", plain: "", analogy: "" },
+  "mch": { mongolian: "Дундаж эритроцитын гемоглобины хэмжээ (MCH)", plain: "", analogy: "" },
+  "mchc": { mongolian: "Дундаж эритроцитын гемоглобины концентраци (MCHC)", plain: "", analogy: "" },
+  "rdw-cv": { mongolian: "Эритроцитын хэмжээний тархалтын коэффициент (RDW-CV)", plain: "", analogy: "" },
+  "rdw-sd": { mongolian: "Эритроцитын хэмжээний тархалтын стандарт хазайлт (RDW-SD)", plain: "", analogy: "" },
+  "neutrophils (neu%)": { mongolian: "Нейтрофил (NEU%)", plain: "", analogy: "" },
+  "lymphocytes (lymph%)": { mongolian: "Лимфоцит (LYMPH%)", plain: "", analogy: "" },
+  "monocytes (mon%)": { mongolian: "Моноцит (MON%)", plain: "", analogy: "" },
+  "eosinophils (eos%)": { mongolian: "Эозинофил (EOS%)", plain: "", analogy: "" },
+  "basophils (bas%)": { mongolian: "Базофил (BAS%)", plain: "", analogy: "" },
+  "platelets (plt)": { mongolian: "Ялтас (PLT)", plain: "", analogy: "" },
+  "pct": { mongolian: "Ялтасын эзэлхүүний харьцаа (PCT)", plain: "", analogy: "" },
+  "pdw": { mongolian: "Ялтасын хэмжээний тархалт (PDW)", plain: "", analogy: "" },
+
+  "hba1c": { mongolian: "Глюкозжсон гемоглобин (HbA1c)", plain: "", analogy: "" },
+
+  "total protein": { mongolian: "Нийт уураг", plain: "", analogy: "" },
+  "albumin": { mongolian: "Альбумин", plain: "", analogy: "" },
+  "ast": { mongolian: "АСТ (аспартатаминотрансфераза)", plain: "", analogy: "" },
+  "alt": { mongolian: "АЛТ (аланинаминотрансфераза)", plain: "", analogy: "" },
+  "ggt": { mongolian: "ГГТ (гамма-глютамилтрансфераза)", plain: "", analogy: "" },
+
+  "total cholesterol": { mongolian: "Нийт холестерин", plain: "", analogy: "" },
+  "triglyceride": { mongolian: "Триглицерид", plain: "", analogy: "" },
+  "hdl-c": { mongolian: "Өндөр нягтралтай липопротейн холестерин (HDL-C)", plain: "", analogy: "" },
+  "ldl-c": { mongolian: "Бага нягтралтай липопротейн холестерин (LDL-C)", plain: "", analogy: "" },
+  "non-hdl-c": { mongolian: "Нон-HDL холестерин", plain: "", analogy: "" },
+
+  "t3 (triiodothyronine)": { mongolian: "Трийодтиронин (Т3)", plain: "", analogy: "" },
+  "t4 (thyroxine)": { mongolian: "Тироксин (Т4)", plain: "", analogy: "" },
+  "tsh (thyroid-stimulating hormone)": { mongolian: "Бамбай булчирхайг өдөөгч даавар (TSH)", plain: "", analogy: "" },
+
+  "creatinine": { mongolian: "Креатинин", plain: "", analogy: "" },
+  "blood urea nitrogen (bun)": { mongolian: "Цусан дахь мочевины азот (BUN)", plain: "", analogy: "" },
+  "uric acid": { mongolian: "Шээсний хүчил", plain: "", analogy: "" },
+  "egfr (estimated glomerular filtration rate)": { mongolian: "Тооцоолсон гломерулын шүүлтийн хурд (eGFR)", plain: "", analogy: "" },
+
+  "urine protein": { mongolian: "Шээсэн дэх уураг", plain: "", analogy: "" },
+  "urine albumin": { mongolian: "Шээсэн дэх альбумин", plain: "", analogy: "" },
+  "urine white blood cells": { mongolian: "Шээсэн дэх цагаан цусны эс", plain: "", analogy: "" },
+  "urine creatinine": { mongolian: "Шээсэн дэх креатинин", plain: "", analogy: "" },
+  "blood in urine": { mongolian: "Шээсэнд цус илрэх", plain: "", analogy: "" },
+  "urine glucose": { mongolian: "Шээсэн дэх глюкоз", plain: "", analogy: "" },
+  "bilirubin": { mongolian: "Билирубин", plain: "", analogy: "" },
+  "urobilinogen": { mongolian: "Уробилиноген", plain: "", analogy: "" },
+  "ketone": { mongolian: "Кетон", plain: "", analogy: "" },
+  "nitrite": { mongolian: "Нитрит", plain: "", analogy: "" },
+  "specific gravity": { mongolian: "Хувийн жин", plain: "", analogy: "" },
+  "urine ph": { mongolian: "Шээсний рН", plain: "", analogy: "" },
+  "protein-to-creatinine ratio (p/c)": { mongolian: "Уураг/креатинины харьцаа (P/C)", plain: "", analogy: "" },
+  "albumin-to-creatinine ratio (a/c)": { mongolian: "Альбумин/креатинины харьцаа (A/C)", plain: "", analogy: "" },
+
+  "ca 19-9 (pancreatic)": { mongolian: "CA 19-9 (нойр булчирхайн хавдрын маркер)", plain: "", analogy: "" },
+  "ca 125 (ovarian)": { mongolian: "CA 125 (өндгөвчний хавдрын маркер)", plain: "", analogy: "" },
+  "afp (liver)": { mongolian: "Альфа-фетопротейн (AFP, элэгний хавдрын маркер)", plain: "", analogy: "" },
+
+  "hbsag (hepatitis b)": { mongolian: "HBsAg (В вируст гепатитийн шинжилгээ)", plain: "", analogy: "" },
+  "anti-hcv (hepatitis c)": { mongolian: "Anti-HCV (С вируст гепатитийн шинжилгээ)", plain: "", analogy: "" },
+  "h. pylori (urea breath test)": { mongolian: "H. pylori амьсгалын шинжилгээ", plain: "", analogy: "" },
+
+  "fecal immunochemical test (fit-hb)": { mongolian: "Далд цусны шинжилгээ (FIT-Hb)", plain: "", analogy: "" },
+  "ecg (ai-assisted)": { mongolian: "Зүрхний цахилгаан бичлэг (ЗЦБ)", plain: "", analogy: "" },
+  "3d mammography (ai-assisted breast screening)": { mongolian: "3D хөхний рентген шинжилгээ", plain: "", analogy: "" },
+  "audiometry (hearing test)": { mongolian: "Сонсголын шинжилгээ", plain: "", analogy: "" },
+  "eye vision test": { mongolian: "Хараа шалгах шинжилгээ", plain: "", analogy: "" },
+  "fundoscopy (diabetic retinopathy screening)": { mongolian: "Нүдний угийн үзлэг (чихрийн шижингийн торлог бүрхэвчийн шинжилгээ)", plain: "", analogy: "" },
+  "dexa scan (bone density)": { mongolian: "Ясны нягтралын шинжилгээ (DEXA)", plain: "", analogy: "" },
+  "full body composition scan (body fat, lean mass, visceral fat)": { mongolian: "Биеийн бүтцийн шинжилгээ (өөх, булчин, дотоод өөх)", plain: "", analogy: "" },
+  "colposcopy (cervical screening)": { mongolian: "Умайн хүзүүний үзлэг (колпоскопи)", plain: "", analogy: "" },
+
+  "lung screening": { mongolian: "Уушгины шинжилгээ", plain: "", analogy: "" },
+  "liver screening": { mongolian: "Элэгний шинжилгээ", plain: "", analogy: "" },
+  "kidney screening": { mongolian: "Бөөрний шинжилгээ", plain: "", analogy: "" },
+  "pancreatic screening": { mongolian: "Нойр булчирхайн шинжилгээ", plain: "", analogy: "" },
+  "coronary heart disease screening": { mongolian: "Зүрхний титэм судасны өвчний шинжилгээ", plain: "", analogy: "" },
+  "emphysema / copd screening": { mongolian: "Уушгины архаг бөглөрөлт өвчний шинжилгээ (COPD)", plain: "", analogy: "" },
+  "visceral fat analysis": { mongolian: "Дотоод өөхний шинжилгээ", plain: "", analogy: "" },
+  "fatty liver detection": { mongolian: "Элэгний өөхжилтийг илрүүлэх шинжилгээ", plain: "", analogy: "" },
+  "liver hypertrophy": { mongolian: "Элэг томролт", plain: "", analogy: "" },
+  "kidney stones": { mongolian: "Бөөрний чулуу", plain: "", analogy: "" },
+  "bone mineral density": { mongolian: "Ясны эрдэс нягтрал", plain: "", analogy: "" },
+};
+
+async function translate(term){
+  if(!term.trim()) return;
+  loading.classList.add('show');
+  errorEl.classList.remove('show');
+  resultEl.classList.remove('show');
+  goBtn.disabled = true;
+
+  const key = term.trim().toLowerCase();
+  const fixed = TRANSLATIONS[key];
+  if(fixed){
+    renderResult(term, fixed.mongolian, fixed.plain, fixed.analogy);
+    loading.classList.remove('show');
+    goBtn.disabled = false;
+    return;
+  }
+
+  try{
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(term)}&langpair=en|mn`;
+    const response = await fetch(url);
+    const data = await response.json();
+    const mongolian = data?.responseData?.translatedText || "(no translation found)";
+    renderResult(term, mongolian, "", "");
+  }catch(err){
+    errorEl.textContent = "Couldn't reach the translator. Try again in a moment.";
+    errorEl.classList.add('show');
+    console.error(err);
+  }finally{
+    loading.classList.remove('show');
+    goBtn.disabled = false;
+  }
+}
+
+
+function renderResult(term, mongolian, plain, analogy){
+  document.getElementById('r-en').textContent = term;
+  document.getElementById('r-mn').textContent = mongolian;
+  const key = 'nura_note_' + term.trim().toLowerCase();
+  const saved = JSON.parse(localStorage.getItem(key) || 'null');
+  document.getElementById('r-plain').textContent = saved?.plain || plain || "";
+  document.getElementById('r-analogy').textContent = saved?.analogy || analogy || "";
+  resultEl.classList.add('show');
+  resultEl.dataset.term = term;
+}
+
+function saveNote(){
+  const term = resultEl.dataset.term;
+  if(!term) return;
+  const key = 'nura_note_' + term.trim().toLowerCase();
+  localStorage.setItem(key, JSON.stringify({
+    plain: document.getElementById('r-plain').textContent,
+    analogy: document.getElementById('r-analogy').textContent
+  }));
+}
+document.getElementById('r-plain').addEventListener('blur', saveNote);
+document.getElementById('r-analogy').addEventListener('blur', saveNote);
+
+document.getElementById('copyCode').addEventListener('click', () => {
+  const term = resultEl.dataset.term;
+  if(!term) return;
+  const mongolian = document.getElementById('r-mn').textContent;
+  const plain = document.getElementById('r-plain').textContent;
+  const analogy = document.getElementById('r-analogy').textContent;
+  const snippet = `  "${term.trim().toLowerCase()}": { mongolian: "${mongolian}", plain: "${plain}", analogy: "${analogy}" },`;
+  navigator.clipboard.writeText(snippet).then(() => {
+    const c = document.getElementById('copyConfirm');
+    c.style.display = 'block';
+    setTimeout(() => c.style.display = 'none', 3000);
+  });
+});
+
+goBtn.addEventListener('click', () => translate(input.value));
+input.addEventListener('keydown', e => { if(e.key === 'Enter') translate(input.value); });
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    input.value = chip.dataset.term;
+    translate(chip.dataset.term);
+  });
+});
+
+const panels = [
+  { title: "Basic measurements", terms: ["Height", "Weight", "Body mass index (BMI)", "Blood pressure", "Pulse rate"] },
+  { title: "CBC — Complete Blood Count", terms: ["RBC (red blood cell count)", "WBC (white blood cell count)", "Hemoglobin (Hb)", "Hematocrit (HCT)", "MCV", "MCH", "MCHC", "RDW-CV", "RDW-SD", "Neutrophils (NEU%)", "Lymphocytes (LYMPH%)", "Monocytes (MON%)", "Eosinophils (EOS%)", "Basophils (BAS%)", "Platelets (PLT)", "PCT", "PDW"] },
+  { title: "Glycosylated hemoglobin test", terms: ["HbA1c"] },
+  { title: "Liver function test", terms: ["Total protein", "Albumin", "AST", "ALT", "GGT"] },
+  { title: "Lipid profile test", terms: ["Total cholesterol", "Triglyceride", "HDL-C", "LDL-C", "Non-HDL-C"] },
+  { title: "Thyroid function test", terms: ["T3 (triiodothyronine)", "T4 (thyroxine)", "TSH (thyroid-stimulating hormone)"] },
+  { title: "Kidney function test", terms: ["Creatinine", "Blood urea nitrogen (BUN)", "Uric acid", "eGFR (estimated glomerular filtration rate)"] },
+  { title: "Urinalysis", terms: ["Urine protein", "Urine albumin", "Urine white blood cells", "Urine creatinine", "Blood in urine", "Urine glucose", "Bilirubin", "Urobilinogen", "Ketone", "Nitrite", "Specific gravity", "Urine pH", "Protein-to-creatinine ratio (P/C)", "Albumin-to-creatinine ratio (A/C)"] },
+  { title: "Tumor markers", terms: ["CA 19-9 (pancreatic)", "CA 125 (ovarian)", "AFP (liver)"] },
+  { title: "Infectious disease screening", terms: ["HBsAg (Hepatitis B)", "Anti-HCV (Hepatitis C)", "H. pylori (urea breath test)"] },
+  { title: "Cancer & organ screening", terms: ["Fecal immunochemical test (FIT-Hb)", "ECG (AI-assisted)", "3D mammography (AI-assisted breast screening)", "Audiometry (hearing test)", "Eye vision test", "Fundoscopy (diabetic retinopathy screening)", "DEXA scan (bone density)", "Full body composition scan (body fat, lean mass, visceral fat)", "Colposcopy (cervical screening)"] },
+  { title: "Low-dose CT screening", terms: ["Lung screening", "Liver screening", "Kidney screening", "Pancreatic screening", "Coronary heart disease screening", "Emphysema / COPD screening", "Visceral fat analysis", "Fatty liver detection", "Liver hypertrophy", "Kidney stones", "Bone mineral density"] }
+];
+
+const catContainer = document.getElementById('categories');
+panels.forEach(p => {
+  const catDiv = document.createElement('div');
+  catDiv.className = 'cat';
+  const title = document.createElement('div');
+  title.className = 'cat-title';
+  title.textContent = p.title;
+  const termsDiv = document.createElement('div');
+  termsDiv.className = 'cat-terms';
+  p.terms.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.textContent = t;
+    btn.addEventListener('click', () => {
+      input.value = t;
+      translate(t);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    termsDiv.appendChild(btn);
+  });
+  catDiv.appendChild(title);
+  catDiv.appendChild(termsDiv);
+  catContainer.appendChild(catDiv);
+});
+</script>
+</body>
+</html>
